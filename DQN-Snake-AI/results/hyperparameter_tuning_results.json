@@ -1,0 +1,174 @@
+[
+    {
+        "trial": 1,
+        "params": {
+            "lr": 0.001,
+            "gamma": 0.95,
+            "epsilon_decay": 0.992,
+            "batch_size": 128,
+            "target_update_freq": 100,
+            "per_alpha": 0.4,
+            "per_beta": 0.4,
+            "dueling": true,
+            "use_double_dqn": true,
+            "use_per": true
+        },
+        "eval_mean": 21.166666666666664,
+        "eval_std": 11.64195667084087,
+        "eval_median": 22.666666666666668,
+        "eval_max": 46,
+        "composite_score": 17.612354997912895,
+        "seed_results": [
+            {
+                "seed": 42,
+                "mean": 28.4,
+                "std": 14.381933110677437,
+                "median": 34.0,
+                "max": 46
+            },
+            {
+                "seed": 101,
+                "mean": 21.2,
+                "std": 9.937806599043876,
+                "median": 22.5,
+                "max": 35
+            },
+            {
+                "seed": 777,
+                "mean": 13.9,
+                "std": 10.6061303028013,
+                "median": 11.5,
+                "max": 31
+            }
+        ]
+    },
+    {
+        "trial": 3,
+        "params": {
+            "lr": 0.0003,
+            "gamma": 0.95,
+            "epsilon_decay": 0.992,
+            "batch_size": 32,
+            "target_update_freq": 50,
+            "per_alpha": 0.4,
+            "per_beta": 0.4,
+            "dueling": true,
+            "use_double_dqn": true,
+            "use_per": true
+        },
+        "eval_mean": 14.966666666666667,
+        "eval_std": 10.927315215489202,
+        "eval_median": 13.333333333333334,
+        "eval_max": 55,
+        "composite_score": 10.8363423922554,
+        "seed_results": [
+            {
+                "seed": 42,
+                "mean": 22.9,
+                "std": 16.18919392681427,
+                "median": 17.0,
+                "max": 55
+            },
+            {
+                "seed": 101,
+                "mean": 18.4,
+                "std": 13.792751719653335,
+                "median": 20.0,
+                "max": 46
+            },
+            {
+                "seed": 777,
+                "mean": 3.6,
+                "std": 2.8000000000000003,
+                "median": 3.0,
+                "max": 10
+            }
+        ]
+    },
+    {
+        "trial": 4,
+        "params": {
+            "lr": 0.001,
+            "gamma": 0.99,
+            "epsilon_decay": 0.997,
+            "batch_size": 128,
+            "target_update_freq": 100,
+            "per_alpha": 0.4,
+            "per_beta": 0.5,
+            "dueling": true,
+            "use_double_dqn": true,
+            "use_per": true
+        },
+        "eval_mean": 10.733333333333334,
+        "eval_std": 7.0266994963470735,
+        "eval_median": 9.833333333333334,
+        "eval_max": 41,
+        "composite_score": 8.20331691849313,
+        "seed_results": [
+            {
+                "seed": 42,
+                "mean": 16.7,
+                "std": 11.983738982471206,
+                "median": 14.0,
+                "max": 41
+            },
+            {
+                "seed": 101,
+                "mean": 1.1,
+                "std": 1.044030650891055,
+                "median": 1.0,
+                "max": 3
+            },
+            {
+                "seed": 777,
+                "mean": 14.4,
+                "std": 8.052328855678958,
+                "median": 14.5,
+                "max": 24
+            }
+        ]
+    },
+    {
+        "trial": 2,
+        "params": {
+            "lr": 0.0003,
+            "gamma": 0.99,
+            "epsilon_decay": 0.992,
+            "batch_size": 128,
+            "target_update_freq": 200,
+            "per_alpha": 0.4,
+            "per_beta": 0.5,
+            "dueling": true,
+            "use_double_dqn": true,
+            "use_per": true
+        },
+        "eval_mean": 10.233333333333334,
+        "eval_std": 6.989853416049173,
+        "eval_median": 9.5,
+        "eval_max": 32,
+        "composite_score": 7.688406625308748,
+        "seed_results": [
+            {
+                "seed": 42,
+                "mean": 10.2,
+                "std": 4.812483766206386,
+                "median": 10.0,
+                "max": 21
+            },
+            {
+                "seed": 101,
+                "mean": 8.4,
+                "std": 9.079647570252934,
+                "median": 5.5,
+                "max": 32
+            },
+            {
+                "seed": 777,
+                "mean": 12.1,
+                "std": 7.077428911688199,
+                "median": 13.0,
+                "max": 27
+            }
+        ]
+    }
+]

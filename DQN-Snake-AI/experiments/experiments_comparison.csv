@@ -1,0 +1,5 @@
+Experiment,Description,Mean_Score,Max_Score,Min_Score,Median_Score,Std_Dev,Avg_Steps
+Experiment A (Original DQN),Single Q-Network baseline with uniform replay,31.57,53,9,29.0,10.53,604.5
+Experiment B (Double DQN),Decoupled action selection and evaluation,27.67,56,4,26.0,12.45,1535.8
+Experiment C (Double Dueling DQN),"DDQN with decoupled Value V(s) and Advantage A(s,a) streams",25.90,54,2,28.0,12.29,607.4
+Experiment D (Double Dueling + PER),DDQN + Dueling + Prioritized Experience Replay via SumTree,28.33,60,0,30.0,15.80,753.6

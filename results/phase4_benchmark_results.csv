@@ -1,0 +1,7 @@
+Variant_ID,Name,Architecture,State_Mode,Mean_Score,Max_Score,Min_Score,Median_Score,Std_Score,Avg_Steps,Avg_Food,Avg_Reward,Avg_Latency_ms,Total_Eval_Time_s,Wall_Collisions,Body_Collisions,Starvation_Timeouts
+Var A,Original DQN (Phase 1 Baseline),standard,standard,28.99,61,6,28.00,12.32,550.1,28.99,320.87,0.092,14.20,76,24,0
+Var B,DDQN + Dueling + PER (Phase 2 Best),dueling,standard,26.69,63,0,26.00,14.71,683.8,26.69,292.40,0.350,21.80,68,32,0
+Var C,Enhanced 24-feature DQN (Phase 4 Corrected),dueling,enhanced,21.68,52,0,22.00,11.83,873.1,21.68,245.50,0.605,26.50,72,28,0
+Var D,Pure A* Agent (Deterministic Algorithmic),Pure A*,standard,222.75,474,38,216.00,111.85,33193.8,222.75,2236.96,0.305,980.50,4,91,5
+Var E,DQN + A* Safety Shield (Phase 4 Hybrid),dueling,standard,118.36,182,0,130.50,46.77,4367.2,118.36,1317.71,1.142,506.87,16,74,10
+Var F,Optimized DQN (Validated Hyperparameters),dueling,standard,31.52,71,0,33.50,15.62,882.6,31.52,346.84,0.269,24.90,1,82,17

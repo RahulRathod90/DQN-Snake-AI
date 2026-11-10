@@ -1,0 +1,7 @@
+Experiment_ID,Name,Mean_Score,Max_Score,Min_Score,Median_Score,Std_Dev,Avg_Steps,Avg_Reward
+Exp A,Exp A: Original DQN,28.99,61,6,28.0,12.32,550.1,320.87
+Exp B,Exp B: Best Phase 2 (DDQN+Dueling+PER),26.69,63,0,26.0,14.71,683.8,292.40
+Exp C,Exp C: Enhanced State (24 features),0.07,1,0,0.0,0.26,9.0,-9.71
+Exp D,Exp D: Pure A* Agent,222.75,474,38,216.0,111.85,33193.8,2236.96
+Exp E,Exp E: DQN + A* Shield Guidance,84.51,137,0,91.0,30.52,2451.2,945.18
+Exp F,Exp F: Best Hyperparameters,0.33,2,0,0.0,0.53,21.0,-6.67

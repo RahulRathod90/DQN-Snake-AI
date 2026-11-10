@@ -1,0 +1,12 @@
+{
+    "lr": 0.001,
+    "gamma": 0.95,
+    "epsilon_decay": 0.992,
+    "batch_size": 128,
+    "target_update_freq": 100,
+    "per_alpha": 0.4,
+    "per_beta": 0.4,
+    "dueling": true,
+    "use_double_dqn": true,
+    "use_per": true
+}

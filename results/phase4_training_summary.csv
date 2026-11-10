@@ -1,0 +1,7 @@
+Variant_ID,Name,Training_Duration_s,Final_Loss,Best_Val_Score,Best_Episode,State_Dim,Double_DQN,Dueling,PER
+Var A,Original DQN,N/A (Pre-trained),N/A,N/A,60,11,False,False,False
+Var B,DDQN + Dueling + PER,N/A (Pre-trained),N/A,N/A,60,11,True,True,True
+Var C,Enhanced 24-feature DQN,187.87,0.023129,35.1,100,24,True,True,True
+Var D,Pure A* Agent,0 (Algorithmic),N/A,N/A,N/A,N/A,N/A,N/A,N/A
+Var E,DQN + A* Safety Shield,0 (Hybrid Inference),N/A,N/A,60,11,True,True,True
+Var F,Optimized DQN,171.06,0.036307,51.92,110,11,True,True,True

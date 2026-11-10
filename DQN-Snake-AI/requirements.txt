@@ -1,0 +1,14 @@
+# Core Reinforcement Learning & Deep Learning Framework
+torch>=2.0.0
+
+# Game Environment & Interactive Graphical User Interface
+pygame>=2.5.0
+
+# Numerical Computation & State Matrix Calculations
+numpy>=1.24.0
+
+# Scientific Visualization, Telemetry Dashboards & Benchmark Graphs
+matplotlib>=3.7.0
+
+# Standalone Windows Executable Deployment (Optional for build.bat)
+pyinstaller>=6.0.0

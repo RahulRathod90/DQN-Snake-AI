@@ -1,0 +1,74 @@
+{
+    "consecutive_games": {
+        "passed": true,
+        "games_completed": 100,
+        "crashes": 0,
+        "mean_score": 29.91,
+        "max_score": 65,
+        "avg_steps": 574.1,
+        "duration_seconds": 8.54,
+        "throughput_fps": 6720.2
+    },
+    "rapid_resets": {
+        "passed": true,
+        "cycles": 200,
+        "duration_seconds": 0.004,
+        "memory_drift_kb": 0.06
+    },
+    "agent_hot_switching": {
+        "passed": true,
+        "switches_evaluated": 7,
+        "duration_seconds": 1.218
+    },
+    "fault_injection": {
+        "passed": true,
+        "missing_file_caught": true,
+        "corrupted_file_caught": true,
+        "dimension_mismatch_caught": true
+    },
+    "pause_resume": {
+        "passed": true
+    },
+    "training_interruption": {
+        "passed": true,
+        "initial_episodes": 2,
+        "resumed_episode": 3,
+        "duration_seconds": 1.14
+    },
+    "memory_leak_profile": {
+        "passed": true,
+        "total_steps": 5000,
+        "duration_seconds": 18.68,
+        "net_drift_kb": 55.35,
+        "drift_rate_kb_per_1k_steps": 11.07,
+        "throughput_steps_per_sec": 267.7,
+        "samples": [
+            [
+                1000,
+                68849.48046875
+            ],
+            [
+                2000,
+                68849.71875
+            ],
+            [
+                3000,
+                68850.578125
+            ],
+            [
+                4000,
+                68850.7578125
+            ],
+            [
+                5000,
+                68850.828125
+            ]
+        ]
+    },
+    "overall": {
+        "total_duration_seconds": 29.8,
+        "peak_memory_mb": 69.65,
+        "final_memory_mb": 67.16,
+        "all_passed": true
+    }
+}

@@ -1,0 +1,17 @@
+=========================================================
+             DQN SNAKE AI EVALUATION REPORT              
+=========================================================
+Agent Mode             : Pure A* Pathfinding
+Model Evaluated        : Pure A*
+State Mode             : STANDARD (11 features)
+Total Games Played     : 2
+---------------------------------------------------------
+Average Score          : 269.00
+Maximum Score          : 295
+Minimum Score          : 243
+Median Score           : 269.0
+Standard Deviation     : 26.00
+Average Food Collected : 269.00
+Average Survival Steps : 39161.50
+Average Total Reward   : 2726.73
+=========================================================

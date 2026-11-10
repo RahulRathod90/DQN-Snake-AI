@@ -1,0 +1,16 @@
+# DQN Snake AI Evaluation Summary
+mode,Pure A* Pathfinding
+state_mode,standard
+games_evaluated,2
+average_score,269.0000
+maximum_score,295
+minimum_score,243
+median_score,269.0000
+std_dev_score,26.0000
+average_food_collected,269.0000
+average_survival_steps,39161.5000
+average_reward,2726.7350
+
+Game,Score,Food_Collected,Survival_Steps,Total_Reward
+1,295,295,43648,2998.48
+2,243,243,34675,2454.99
