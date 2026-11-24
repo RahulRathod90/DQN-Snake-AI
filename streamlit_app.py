@@ -199,8 +199,10 @@ def render_game_svg(game: SnakeGameAI, planned_path: Optional[List[Tuple[int, in
     w, h = game.width, game.height
     bs = game.block_size
     svg_parts = [
+        '<div style="width:100%; display:flex; justify-content:center; align-items:center; margin: 0 auto;">',
         f'<svg viewBox="0 0 {w} {h}" width="100%" height="auto" '
-        'style="border-radius:12px; border:2px solid #334155; background:#0F172A; '
+        f'style="max-width:{w}px; width:100%; aspect-ratio:{w}/{h}; min-height:360px; max-height:480px; '
+        'border-radius:12px; border:2px solid #334155; background:#0F172A; '
         'box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); display:block;">',
         '<defs>',
         '  <linearGradient id="snakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">',
@@ -276,14 +278,14 @@ def render_game_svg(game: SnakeGameAI, planned_path: Optional[List[Tuple[int, in
     svg_parts.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="#EF4444" stroke="#FCA5A5" stroke-width="1.5" />')
     svg_parts.append(f'<circle cx="{cx - 2}" cy="{cy - 2}" r="2" fill="#FFFFFF" opacity="0.8" />')
 
-    svg_parts.append("</svg>")
+    svg_parts.append("</svg></div>")
     return "".join(svg_parts)
 
 
 # ==============================================================================
 # Simulation Step Logic
 # ==============================================================================
-def execute_game_step(agent_label: str, models: Dict[str, dict]):
+def execute_game_step(agent_label: str, models: Dict[str, dict], auto_restart: bool = True):
     """Advance simulation by 1 decision step according to selected agent."""
     game = st.session_state.game
     shield = st.session_state.shield
@@ -338,9 +340,13 @@ def execute_game_step(agent_label: str, models: Dict[str, dict]):
 
     if done:
         st.session_state.game_over_banner = True
-        st.session_state.is_playing = False
-        game.reset()
-        shield.reset_telemetry()
+        if auto_restart:
+            game.reset()
+            shield.reset_telemetry()
+        else:
+            st.session_state.is_playing = False
+            game.reset()
+            shield.reset_telemetry()
 
 
 # ==============================================================================
@@ -365,7 +371,7 @@ models = load_all_models()
 # TAB 1: Live AI Arena
 # ------------------------------------------------------------------------------
 with tab_arena:
-    col_ctrl, col_board, col_telemetry = st.columns([1.1, 2.2, 1.2], gap="medium")
+    col_ctrl, col_arena = st.columns([1.1, 3.4], gap="medium")
 
     with col_ctrl:
         st.subheader("Agent Configuration")
@@ -392,6 +398,7 @@ with tab_arena:
         interval = speed_intervals[speed_choice]
 
         show_astar_path = st.toggle("Show A* Path Overlay", value=True)
+        auto_restart = st.toggle("Auto-Restart on Collision", value=True)
 
         st.divider()
 
@@ -419,88 +426,93 @@ with tab_arena:
 
         if not st.session_state.is_playing:
             if st.button("⏭️ Step Single Move", width="stretch"):
-                execute_game_step(agent_choice, models)
+                execute_game_step(agent_choice, models, auto_restart=auto_restart)
                 st.rerun()
 
-        st.divider()
-
-        # Score Metrics
-        st.metric("Current Score", f"{st.session_state.game.score} 🍎")
-        st.metric("High Score (Session)", f"{st.session_state.high_score} 🍎")
-        st.metric("Step Counter", f"{st.session_state.step_count} moves")
-
-    # Center: The Game Board
-    with col_board:
-        if st.session_state.game_over_banner:
-            st.warning("Game Over! The snake collided. Click ▶️ Play or ⏭️ Step to restart.")
-
-        # Fragment to execute live animation loops
+    with col_arena:
+        # Fragment to execute live animation loops and real-time telemetry updates
         @st.fragment(run_every=interval if st.session_state.is_playing else None)
         def live_arena_fragment():
             try:
                 if st.session_state.is_playing:
-                    execute_game_step(agent_choice, models)
+                    execute_game_step(agent_choice, models, auto_restart=auto_restart)
 
-                path_to_draw = None
-                if show_astar_path:
-                    if "Pure A*" in agent_choice:
-                        path_to_draw = getattr(st.session_state.astar_bot, "last_path", None)
-                    else:
-                        path_to_draw = getattr(st.session_state.shield, "last_path", None)
+                # Live Real-time Score Metrics Bar (Updates every frame!)
+                m1, m2, m3, m4 = st.columns(4)
+                m1.metric("Current Score", f"{st.session_state.game.score} 🍎")
+                m2.metric("High Score", f"{st.session_state.high_score} 🏆")
+                m3.metric("Step Counter", f"{st.session_state.step_count} moves")
+                status_text = "🟢 Playing" if st.session_state.is_playing else ("⚠️ Collision" if st.session_state.game_over_banner else "⏸️ Paused")
+                m4.metric("Status", status_text)
 
-                svg_html = render_game_svg(st.session_state.game, path_to_draw)
-                st.html(svg_html)
+                col_board, col_telemetry = st.columns([2.2, 1.2], gap="medium")
+
+                # Center: The Game Board
+                with col_board:
+                    if st.session_state.game_over_banner and not st.session_state.is_playing:
+                        st.warning("Game Over! The snake collided. Click ▶️ Play or ⏭️ Step to restart.")
+
+                    path_to_draw = None
+                    if show_astar_path:
+                        if "Pure A*" in agent_choice:
+                            path_to_draw = getattr(st.session_state.astar_bot, "last_path", None)
+                        else:
+                            path_to_draw = getattr(st.session_state.shield, "last_path", None)
+
+                    svg_html = render_game_svg(st.session_state.game, path_to_draw)
+                    st.html(svg_html)
+
+                # Right: Real-time Telemetry Dashboard
+                with col_telemetry:
+                    st.subheader("Decision Telemetry")
+
+                    action_names = ["Straight (0)", "Turn Right (1)", "Turn Left (2)"]
+                    st.write(f"**Last Action:** `{action_names[st.session_state.last_action]}`")
+
+                    # Q-Values visualization
+                    if any(v != 0.0 for v in st.session_state.last_q_values):
+                        st.caption("Predicted Q-Values ($Q_{s, a}$)")
+                        q_df = pd.DataFrame({
+                            "Action": ["Straight", "Right", "Left"],
+                            "Q-Value": st.session_state.last_q_values,
+                        })
+                        st.bar_chart(q_df, x="Action", y="Q-Value", height=160)
+
+                    st.divider()
+
+                    # Spatial Risk Chips
+                    game = st.session_state.game
+                    dirs = ["UP", "RIGHT", "DOWN", "LEFT"]
+                    c_idx = dirs.index(game.direction)
+                    danger_s = game.check_collision(dirs[c_idx])
+                    danger_r = game.check_collision(dirs[(c_idx + 1) % 4])
+                    danger_l = game.check_collision(dirs[(c_idx - 1) % 4])
+
+                    st.caption("Immediate Collision Risk")
+                    rc1, rc2, rc3 = st.columns(3)
+                    with rc1:
+                        st.markdown(f"**Straight**\n{'🔴 Risk' if danger_s else '🟢 Clear'}")
+                    with rc2:
+                        st.markdown(f"**Right**\n{'🔴 Risk' if danger_r else '🟢 Clear'}")
+                    with rc3:
+                        st.markdown(f"**Left**\n{'🔴 Risk' if danger_l else '🟢 Clear'}")
+
+                    # Safety Shield Metrics
+                    if "Safety Shield" in agent_choice:
+                        st.divider()
+                        st.caption("A* Safety Shield Status")
+                        sh = st.session_state.shield
+                        override_status = "⚠️ Overridden" if st.session_state.last_shield_override else "✅ Approved"
+                        st.write(f"**Intervention:** {override_status}")
+                        st.write(f"**Rejection Reason:** `{st.session_state.last_rejection_reason}`")
+                        st.write(f"**Total Decisions:** {sh.total_decisions}")
+                        st.write(f"**Total Interventions:** {sh.actions_rejected}")
+
             except Exception as e:
                 st.session_state.is_playing = False
                 st.error(f"Live simulation error: {e}")
 
         live_arena_fragment()
-
-    # Right: Real-time Telemetry Dashboard
-    with col_telemetry:
-        st.subheader("Decision Telemetry")
-
-        action_names = ["Straight (0)", "Turn Right (1)", "Turn Left (2)"]
-        st.write(f"**Last Action:** `{action_names[st.session_state.last_action]}`")
-
-        # Q-Values visualization
-        if any(v != 0.0 for v in st.session_state.last_q_values):
-            st.caption("Predicted Q-Values ($Q_{s, a}$)")
-            q_df = pd.DataFrame({
-                "Action": ["Straight", "Right", "Left"],
-                "Q-Value": st.session_state.last_q_values,
-            })
-            st.bar_chart(q_df, x="Action", y="Q-Value", height=180)
-
-        st.divider()
-
-        # Spatial Risk Chips
-        game = st.session_state.game
-        dirs = ["UP", "RIGHT", "DOWN", "LEFT"]
-        c_idx = dirs.index(game.direction)
-        danger_s = game.check_collision(dirs[c_idx])
-        danger_r = game.check_collision(dirs[(c_idx + 1) % 4])
-        danger_l = game.check_collision(dirs[(c_idx - 1) % 4])
-
-        st.caption("Immediate Collision Risk")
-        rc1, rc2, rc3 = st.columns(3)
-        with rc1:
-            st.markdown(f"**Straight**\n{'🔴 Risk' if danger_s else '🟢 Clear'}")
-        with rc2:
-            st.markdown(f"**Right**\n{'🔴 Risk' if danger_r else '🟢 Clear'}")
-        with rc3:
-            st.markdown(f"**Left**\n{'🔴 Risk' if danger_l else '🟢 Clear'}")
-
-        # Safety Shield Metrics
-        if "Safety Shield" in agent_choice:
-            st.divider()
-            st.caption("A* Safety Shield Status")
-            sh = st.session_state.shield
-            override_status = "⚠️ Overridden" if st.session_state.last_shield_override else "✅ Approved"
-            st.write(f"**Intervention:** {override_status}")
-            st.write(f"**Rejection Reason:** `{st.session_state.last_rejection_reason}`")
-            st.write(f"**Total Decisions:** {sh.total_decisions}")
-            st.write(f"**Total Interventions:** {sh.actions_rejected}")
 
 
 # ------------------------------------------------------------------------------
