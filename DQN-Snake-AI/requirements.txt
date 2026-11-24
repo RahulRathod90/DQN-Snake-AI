@@ -1,9 +1,6 @@
 # Core Reinforcement Learning & Deep Learning Framework
 torch>=2.0.0
 
-# Game Environment & Interactive Graphical User Interface
-pygame>=2.5.0
-
 # Numerical Computation & State Matrix Calculations
 numpy>=1.24.0
 
@@ -13,5 +10,8 @@ matplotlib>=3.7.0
 # Interactive Web Application & Cloud Deployment
 streamlit>=1.30.0
 
+# Game Environment & Interactive Graphical User Interface (Windows Desktop App)
+pygame>=2.5.0; sys_platform == 'win32'
+
 # Standalone Windows Executable Deployment (Optional for build.bat)
-pyinstaller>=6.0.0
+pyinstaller>=6.0.0; sys_platform == 'win32'

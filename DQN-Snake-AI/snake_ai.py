@@ -13,7 +13,10 @@ import random
 from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
-import pygame
+try:
+    import pygame
+except ImportError:
+    pygame = None
 import torch
 
 from config import (
@@ -87,6 +90,8 @@ class SnakeGameAI:
         self.clock = None
 
         if self.display:
+            if pygame is None:
+                raise ImportError("Pygame is required when display=True. Please install pygame: pip install pygame")
             if not pygame.get_init():
                 pygame.init()
             self.screen = pygame.display.set_mode((self.width, self.height))
@@ -544,7 +549,7 @@ class SnakeGameAI:
         """
         Render game frame with decision telemetry overlay (HUD, A* path, Q-values).
         """
-        if not self.display or self.screen is None:
+        if not self.display or self.screen is None or pygame is None:
             return
 
         pygame.event.pump()

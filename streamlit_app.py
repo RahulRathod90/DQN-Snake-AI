@@ -23,11 +23,14 @@ for p in [str(ROOT_DIR), str(SUB_DIR)]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
-os.environ["SDL_VIDEODRIVER"] = "dummy"
-import pygame
+try:
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
+    import pygame
 
-if not pygame.get_init():
-    pygame.init()
+    if not pygame.get_init():
+        pygame.init()
+except Exception:
+    pass
 
 from model import Dueling_QNet, Linear_QNet
 from pathfinding import AStarAgent, AStarSafetyShield
