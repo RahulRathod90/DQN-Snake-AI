@@ -13,6 +13,7 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
+from PIL import Image, ImageDraw
 import streamlit as st
 import torch
 
@@ -192,94 +193,93 @@ if "game_over_banner" not in st.session_state:
 
 
 # ==============================================================================
-# Helper: SVG Game Board Renderer
+# Helper: Crisp PIL Game Board Renderer (100% Reliable Cross-Browser)
 # ==============================================================================
-def render_game_svg(game: SnakeGameAI, planned_path: Optional[List[Tuple[int, int]]] = None) -> str:
-    """Generate high-contrast, scalable SVG graphic of current Snake board."""
+def render_game_board_image(
+    game: SnakeGameAI, planned_path: Optional[List[Tuple[int, int]]] = None
+) -> Image.Image:
+    """Generate crisp, high-contrast, scalable graphic of current Snake board using PIL."""
     w, h = game.width, game.height
     bs = game.block_size
-    svg_parts = [
-        '<div style="width:100%; display:flex; justify-content:center; align-items:center; margin: 0 auto;">',
-        f'<svg viewBox="0 0 {w} {h}" width="100%" height="auto" '
-        f'style="max-width:{w}px; width:100%; aspect-ratio:{w}/{h}; min-height:360px; max-height:480px; '
-        'border-radius:12px; border:2px solid #334155; background:#0F172A; '
-        'box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); display:block;">',
-        '<defs>',
-        '  <linearGradient id="snakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">',
-        '    <stop offset="0%" stop-color="#10B981" />',
-        '    <stop offset="100%" stop-color="#059669" />',
-        '  </linearGradient>',
-        '  <linearGradient id="headGrad" x1="0%" y1="0%" x2="100%" y2="100%">',
-        '    <stop offset="0%" stop-color="#34D399" />',
-        '    <stop offset="100%" stop-color="#10B981" />',
-        '  </linearGradient>',
-        '  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">',
-        '    <feGaussianBlur stdDeviation="3" result="blur" />',
-        '    <feComposite in="SourceGraphic" in2="blur" operator="over" />',
-        '  </filter>',
-        '</defs>',
-    ]
+    img = Image.new("RGB", (w, h), (15, 23, 42))  # Slate dark background (#0F172A)
+    draw = ImageDraw.Draw(img)
 
     # 1. Subtle grid lines
+    grid_color = (30, 41, 59)
     for x in range(0, w, bs * 2):
-        svg_parts.append(f'<line x1="{x}" y1="0" x2="{x}" y2="{h}" stroke="#1E293B" stroke-width="0.8" />')
+        draw.line([(x, 0), (x, h)], fill=grid_color, width=1)
     for y in range(0, h, bs * 2):
-        svg_parts.append(f'<line x1="0" y1="{y}" x2="{w}" y2="{y}" stroke="#1E293B" stroke-width="0.8" />')
+        draw.line([(0, y), (w, y)], fill=grid_color, width=1)
 
     # 2. Draw Planned A* Path Overlay
     if planned_path and len(planned_path) > 1:
-        points_str = " ".join(f"{gx * bs + bs // 2},{gy * bs + bs // 2}" for gx, gy in planned_path)
-        svg_parts.append(
-            f'<polyline points="{points_str}" fill="none" stroke="#06B6D4" stroke-width="2.5" '
-            'stroke-dasharray="4,4" opacity="0.65" />'
-        )
+        cyan = (6, 182, 212)
+        path_pixels = [
+            (gx * bs + bs // 2, gy * bs + bs // 2) for gx, gy in planned_path
+        ]
+        for i in range(len(path_pixels) - 1):
+            draw.line([path_pixels[i], path_pixels[i + 1]], fill=cyan, width=2)
+        for pt in path_pixels:
+            draw.ellipse([pt[0] - 2, pt[1] - 2, pt[0] + 2, pt[1] + 2], fill=cyan)
 
-    # 3. Draw Snake Body
-    for i, seg in enumerate(game.snake[1:], start=1):
+    # 3. Draw Snake Body Segments
+    body_fill = (16, 185, 129)
+    body_outline = (5, 150, 105)
+    for seg in game.snake[1:]:
         sx, sy = seg
-        svg_parts.append(
-            f'<rect x="{sx + 1}" y="{sy + 1}" width="{bs - 2}" height="{bs - 2}" '
-            f'rx="4" fill="url(#snakeGrad)" />'
+        draw.rounded_rectangle(
+            [sx + 1, sy + 1, sx + bs - 2, sy + bs - 2],
+            radius=4,
+            fill=body_fill,
+            outline=body_outline,
+            width=1,
         )
 
-    # 4. Draw Snake Head with Eyes
+    # 4. Draw Snake Head with Direction-Aware Eyes
     if game.snake:
         hx, hy = game.snake[0]
-        svg_parts.append(
-            f'<rect x="{hx + 0.5}" y="{hy + 0.5}" width="{bs - 1}" height="{bs - 1}" '
-            f'rx="5" fill="url(#headGrad)" stroke="#6EE7B7" stroke-width="1.2" />'
+        head_fill = (52, 211, 153)
+        head_outline = (110, 231, 183)
+        draw.rounded_rectangle(
+            [hx + 1, hy + 1, hx + bs - 2, hy + bs - 2],
+            radius=5,
+            fill=head_fill,
+            outline=head_outline,
+            width=1,
         )
-        # Direction-aware eyes
-        eye_radius = 2.5
-        pupil_radius = 1.2
+
+        eye_color = (255, 255, 255)
+        pupil_color = (15, 23, 42)
         if game.direction == "UP":
-            e1, e2 = (hx + 5, hy + 5), (hx + bs - 5, hy + 5)
-            p1, p2 = (hx + 5, hy + 4), (hx + bs - 5, hy + 4)
+            e1, e2 = (hx + 4, hy + 4), (hx + bs - 6, hy + 4)
+            p1, p2 = (hx + 4, hy + 3), (hx + bs - 6, hy + 3)
         elif game.direction == "DOWN":
-            e1, e2 = (hx + 5, hy + bs - 5), (hx + bs - 5, hy + bs - 5)
-            p1, p2 = (hx + 5, hy + bs - 4), (hx + bs - 5, hy + bs - 4)
+            e1, e2 = (hx + 4, hy + bs - 6), (hx + bs - 6, hy + bs - 6)
+            p1, p2 = (hx + 4, hy + bs - 5), (hx + bs - 6, hy + bs - 5)
         elif game.direction == "LEFT":
-            e1, e2 = (hx + 5, hy + 5), (hx + 5, hy + bs - 5)
-            p1, p2 = (hx + 4, hy + 5), (hx + 4, hy + bs - 5)
+            e1, e2 = (hx + 4, hy + 4), (hx + 4, hy + bs - 6)
+            p1, p2 = (hx + 3, hy + 4), (hx + 3, hy + bs - 6)
         else:  # RIGHT
-            e1, e2 = (hx + bs - 5, hy + 5), (hx + bs - 5, hy + bs - 5)
-            p1, p2 = (hx + bs - 4, hy + 5), (hx + bs - 4, hy + bs - 5)
+            e1, e2 = (hx + bs - 6, hy + 4), (hx + bs - 6, hy + bs - 6)
+            p1, p2 = (hx + bs - 5, hy + 4), (hx + bs - 5, hy + bs - 6)
 
-        svg_parts.append(f'<circle cx="{e1[0]}" cy="{e1[1]}" r="{eye_radius}" fill="#FFFFFF" />')
-        svg_parts.append(f'<circle cx="{e2[0]}" cy="{e2[1]}" r="{eye_radius}" fill="#FFFFFF" />')
-        svg_parts.append(f'<circle cx="{p1[0]}" cy="{p1[1]}" r="{pupil_radius}" fill="#0F172A" />')
-        svg_parts.append(f'<circle cx="{p2[0]}" cy="{p2[1]}" r="{pupil_radius}" fill="#0F172A" />')
+        for e in [e1, e2]:
+            draw.ellipse([e[0] - 2, e[1] - 2, e[0] + 2, e[1] + 2], fill=eye_color)
+        for p in [p1, p2]:
+            draw.ellipse([p[0] - 1, p[1] - 1, p[0] + 1, p[1] + 1], fill=pupil_color)
 
-    # 5. Draw Glowing Ruby Food
+    # 5. Draw Glowing Ruby Food Ball
     fx, fy = game.food
     cx, cy = fx + bs // 2, fy + bs // 2
     r = bs // 2 - 2
-    svg_parts.append(f'<circle cx="{cx}" cy="{cy}" r="{r + 3}" fill="#EF4444" opacity="0.3" filter="url(#glow)" />')
-    svg_parts.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="#EF4444" stroke="#FCA5A5" stroke-width="1.5" />')
-    svg_parts.append(f'<circle cx="{cx - 2}" cy="{cy - 2}" r="2" fill="#FFFFFF" opacity="0.8" />')
+    # Outer glow
+    draw.ellipse([cx - r - 3, cy - r - 3, cx + r + 3, cy + r + 3], fill=(153, 27, 27))
+    # Red sphere
+    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(239, 68, 68), outline=(254, 202, 202), width=1)
+    # Specular shine
+    draw.ellipse([cx - 3, cy - 3, cx - 1, cy - 1], fill=(255, 255, 255))
 
-    svg_parts.append("</svg></div>")
-    return "".join(svg_parts)
+    return img
 
 
 # ==============================================================================
@@ -459,8 +459,8 @@ with tab_arena:
                         else:
                             path_to_draw = getattr(st.session_state.shield, "last_path", None)
 
-                    svg_html = render_game_svg(st.session_state.game, path_to_draw)
-                    st.html(svg_html)
+                    board_img = render_game_board_image(st.session_state.game, path_to_draw)
+                    st.image(board_img, use_container_width=True)
 
                 # Right: Real-time Telemetry Dashboard
                 with col_telemetry:
