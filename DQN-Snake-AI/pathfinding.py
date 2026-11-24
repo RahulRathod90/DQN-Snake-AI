@@ -331,6 +331,7 @@ class AStarSafetyShield:
 
         self.finder = PathFinder(width, height, block_size)
         self.enabled = enabled
+        self.last_path: List[Tuple[int, int]] = []
         self.reset_telemetry()
 
     def reset_telemetry(self) -> None:
@@ -343,6 +344,7 @@ class AStarSafetyShield:
         self.fallback_tail_chase = 0
         self.fallback_free_space = 0
         self.last_rejection_reason: str = "None"
+        self.last_path = []
         self.rejection_reasons = {
             "immediate_collision": 0,
             "trapped_pocket": 0,
@@ -442,6 +444,7 @@ class AStarSafetyShield:
         """
         self.total_decisions += 1
         self.last_rejection_reason = "None"
+        self.last_path = []
 
         if not self.enabled:
             self.dqn_actions_approved += 1
@@ -470,6 +473,7 @@ class AStarSafetyShield:
             act_safe, _, _ = self.evaluate_action_safety(game, astar_act)
             if act_safe:
                 self.fallback_astar_food += 1
+                self.last_path = food_path
                 return astar_act, True, "astar_food"
 
         # Priority 2: Alternative DQN actions (ranked by Q-value if provided)
@@ -490,6 +494,7 @@ class AStarSafetyShield:
             tail_safe, _, _ = self.evaluate_action_safety(game, tail_act)
             if tail_safe:
                 self.fallback_tail_chase += 1
+                self.last_path = tail_path
                 return tail_act, True, "tail_chase"
 
         # Priority 4: Emergency Maximal Free Space BFS
@@ -501,6 +506,7 @@ class AStarSafetyShield:
             )
             space_act = self.finder.grid_step_to_action(head_grid, best_neighbor, game.direction)
             self.fallback_free_space += 1
+            self.last_path = [head_grid, best_neighbor]
             return space_act, True, "free_space"
 
         # Inevitable collision: execute DQN action

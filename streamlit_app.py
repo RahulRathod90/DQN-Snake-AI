@@ -439,9 +439,9 @@ with tab_arena:
             path_to_draw = None
             if show_astar_path:
                 if "Pure A*" in agent_choice:
-                    path_to_draw = st.session_state.astar_bot.last_path
+                    path_to_draw = getattr(st.session_state.astar_bot, "last_path", None)
                 else:
-                    path_to_draw = st.session_state.shield.last_path
+                    path_to_draw = getattr(st.session_state.shield, "last_path", None)
 
             svg_html = render_game_svg(st.session_state.game, path_to_draw)
             st.html(svg_html)
