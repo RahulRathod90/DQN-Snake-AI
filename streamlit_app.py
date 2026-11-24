@@ -158,9 +158,13 @@ if "game" not in st.session_state:
 
 if "shield" not in st.session_state:
     st.session_state.shield = AStarSafetyShield(SCREEN_WIDTH, SCREEN_HEIGHT, BLOCK_SIZE)
+elif not hasattr(st.session_state.shield, "last_path"):
+    st.session_state.shield.last_path = []
 
 if "astar_bot" not in st.session_state:
     st.session_state.astar_bot = AStarAgent(SCREEN_WIDTH, SCREEN_HEIGHT, BLOCK_SIZE)
+elif not hasattr(st.session_state.astar_bot, "last_path"):
+    st.session_state.astar_bot.last_path = []
 
 if "is_playing" not in st.session_state:
     st.session_state.is_playing = False
@@ -433,18 +437,22 @@ with tab_arena:
         # Fragment to execute live animation loops
         @st.fragment(run_every=interval if st.session_state.is_playing else None)
         def live_arena_fragment():
-            if st.session_state.is_playing:
-                execute_game_step(agent_choice, models)
+            try:
+                if st.session_state.is_playing:
+                    execute_game_step(agent_choice, models)
 
-            path_to_draw = None
-            if show_astar_path:
-                if "Pure A*" in agent_choice:
-                    path_to_draw = getattr(st.session_state.astar_bot, "last_path", None)
-                else:
-                    path_to_draw = getattr(st.session_state.shield, "last_path", None)
+                path_to_draw = None
+                if show_astar_path:
+                    if "Pure A*" in agent_choice:
+                        path_to_draw = getattr(st.session_state.astar_bot, "last_path", None)
+                    else:
+                        path_to_draw = getattr(st.session_state.shield, "last_path", None)
 
-            svg_html = render_game_svg(st.session_state.game, path_to_draw)
-            st.html(svg_html)
+                svg_html = render_game_svg(st.session_state.game, path_to_draw)
+                st.html(svg_html)
+            except Exception as e:
+                st.session_state.is_playing = False
+                st.error(f"Live simulation error: {e}")
 
         live_arena_fragment()
 
