@@ -176,6 +176,9 @@ if "step_count" not in st.session_state:
 if "high_score" not in st.session_state:
     st.session_state.high_score = 0
 
+if "last_game_score" not in st.session_state:
+    st.session_state.last_game_score = 0
+
 if "last_action" not in st.session_state:
     st.session_state.last_action = 0
 
@@ -340,13 +343,18 @@ def execute_game_step(agent_label: str, models: Dict[str, dict], auto_restart: b
 
     if done:
         st.session_state.game_over_banner = True
+        st.session_state.last_game_score = score
         if auto_restart:
             game.reset()
             shield.reset_telemetry()
+            if hasattr(astar_bot, "last_path"):
+                astar_bot.last_path = []
         else:
             st.session_state.is_playing = False
             game.reset()
             shield.reset_telemetry()
+            if hasattr(astar_bot, "last_path"):
+                astar_bot.last_path = []
 
 
 # ==============================================================================
@@ -440,7 +448,8 @@ with tab_arena:
                 # Live Real-time Score Metrics Bar (Updates every frame!)
                 m1, m2, m3, m4 = st.columns(4)
                 m1.metric("Current Score", f"{st.session_state.game.score} 🍎")
-                m2.metric("High Score", f"{st.session_state.high_score} 🏆")
+                delta_val = f"Last run: {st.session_state.last_game_score} 🍎" if st.session_state.last_game_score > 0 else None
+                m2.metric("High Score", f"{st.session_state.high_score} 🏆", delta=delta_val)
                 m3.metric("Step Counter", f"{st.session_state.step_count} moves")
                 status_text = "🟢 Playing" if st.session_state.is_playing else ("⚠️ Collision" if st.session_state.game_over_banner else "⏸️ Paused")
                 m4.metric("Status", status_text)
@@ -460,7 +469,16 @@ with tab_arena:
                             path_to_draw = getattr(st.session_state.shield, "last_path", None)
 
                     board_img = render_game_board_image(st.session_state.game, path_to_draw)
-                    st.image(board_img, use_container_width=True)
+                    try:
+                        st.image(board_img, width="stretch")
+                    except TypeError:
+                        st.image(board_img, use_container_width=True)
+
+                    st.caption(
+                        f"🎮 Grid: {st.session_state.game.width // st.session_state.game.block_size}×{st.session_state.game.height // st.session_state.game.block_size} cells "
+                        f"| Snake Length: {len(st.session_state.game.snake)} "
+                        f"| Food Target: ({st.session_state.game.food[0]}, {st.session_state.game.food[1]})"
+                    )
 
                 # Right: Real-time Telemetry Dashboard
                 with col_telemetry:
