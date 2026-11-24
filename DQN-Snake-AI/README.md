@@ -8,7 +8,8 @@ A Snake game AI platform that combines Deep Q-Learning with graph-search pathfin
 ## Project Links
 
 - **GitHub Repository**: [DQN-Snake-AI](https://github.com/RahulRathod90/DQN-Snake-AI)
-- **Live Demo**: This project is currently a desktop application and does not have a browser-hosted demo. Add a demo video or deployment URL here when one is available.
+- **Live Interactive Web Demo**: Deployable on Streamlit Community Cloud via `streamlit_app.py`.
+- **Desktop Application**: Available for Windows via `run.bat` or `python app.py`.
 
 ---
 
