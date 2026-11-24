@@ -1,15 +1,21 @@
 # DQN Snake AI
 ### Deep Reinforcement Learning & Intelligent Pathfinding Platform
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit%20Cloud-FF4B4B.svg)](https://dqn-snake-ai.streamlit.app)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717.svg?logo=github)](https://github.com/RahulRathod90/DQN-Snake-AI)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB.svg?logo=python)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C.svg?logo=pytorch)](https://pytorch.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A Snake game AI platform that combines Deep Q-Learning with graph-search pathfinding. It progresses from a baseline DQN agent to advanced reinforcement-learning variants, A* planning, a safety-shielded hybrid agent, and an interactive desktop application for training, evaluation, and analysis.
 
 ---
 
 ## Project Links
 
-- **GitHub Repository**: [DQN-Snake-AI](https://github.com/RahulRathod90/DQN-Snake-AI)
-- **Live Interactive Web Demo**: Deployable on Streamlit Community Cloud via `streamlit_app.py`.
-- **Desktop Application**: Available for Windows via `run.bat` or `python app.py`.
+- 🌐 **Live Web Demo**: [https://dqn-snake-ai.streamlit.app](https://dqn-snake-ai.streamlit.app) *(Streamlit Community Cloud)*
+- 🐙 **GitHub Repository**: [RahulRathod90/DQN-Snake-AI](https://github.com/RahulRathod90/DQN-Snake-AI)
+- 🎮 **Desktop Application**: Available for Windows via `run.bat` or `python app.py`
 
 ---
 
